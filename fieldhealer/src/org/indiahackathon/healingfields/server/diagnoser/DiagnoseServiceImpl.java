@@ -1,9 +1,9 @@
 package org.indiahackathon.healingfields.server.diagnoser;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,22 +16,28 @@ public class DiagnoseServiceImpl implements DiagnoseService {
 	
 	private static final Logger log = Logger.getLogger(DiagnoseServiceImpl.class.getName());
 
+<<<<<<< HEAD
 	private static final String SELECT_DISEASES = "SELECT DISTINCT disease FROM diseases_with_symptoms WHERE symptom in (?)";
 	private static final String ADD_DISEASE_NOTIFICATION = "INSERT INTO diseases (location, disease) VALUES (?, ?)";
 	private static final String FIND_EPIDEMICS =
 			"SELECT disease, count(disease) as instances FROM diseases GROUP BY disease, location HAVING location == (?) and instances >= 3";
+=======
+	private static final String SELECT_DISEASES_START = "SELECT DISTINCT disease FROM diseases_with_symptoms WHERE symptom in (";
+	private static final String SELECT_DISEASES_END = ")";
+>>>>>>> 4a0889c420c3ab1bec29750285d5cdaa1efe9ffe
 	@Override
 	public List<String> findPotentialDiseases(String symptoms)
 			throws DiagnoseServiceException {
 		List<String> diseases = Lists.newArrayList();
 		Connection conn = null;
-		PreparedStatement stmt = null;
+		Statement stmt = null;
 		ResultSet rs = null;
+		String sql = SELECT_DISEASES_START + symptoms + SELECT_DISEASES_END;
+		log.info("SQL: " + sql);
 		try {
 			conn = Database.getConnection();
-			stmt = conn.prepareStatement(SELECT_DISEASES);
-			stmt.setString(0, symptoms);
-			rs = stmt.executeQuery();
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
 			while(rs.next()) {
 				String disease = rs.getString("disease");
 				diseases.add(disease);
