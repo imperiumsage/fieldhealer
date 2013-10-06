@@ -13,7 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.indiahackathon.healingfields.server.diagnoser.DiagnoseService;
 import org.indiahackathon.healingfields.server.diagnoser.DiagnoseServiceException;
 import org.indiahackathon.healingfields.server.diagnoser.DiagnoseServiceImpl;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class DiagnoseServlet extends HttpServlet {
 
@@ -28,6 +31,7 @@ public class DiagnoseServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		String data = req.getParameter("data");
+		log.info("Data: " + data);
 		DiagnoseService diagnoseService = new DiagnoseServiceImpl();
 		List<String> diseases = null;
 		try {
@@ -47,6 +51,21 @@ public class DiagnoseServlet extends HttpServlet {
 	private String parseDataForSymptoms(String data) {
 		StringBuffer symptoms = new StringBuffer();
 		JSONParser parser = new JSONParser();
+		try {
+			JSONObject obj = (org.json.simple.JSONObject) parser.parse(data);
+			JSONArray symptomsArray = (JSONArray) obj.get("symptoms");
+			boolean isFirst = true;
+			for (Object symptom : symptomsArray) {
+				if (!isFirst) {
+					symptoms.append(", ");
+				}
+				symptoms.append("'" + symptom + "'");
+				isFirst = false;
+			}
+			log.info("Symptoms: " + symptoms);
+		} catch (ParseException e) {
+			log.log(Level.SEVERE, "Failed to parse JSON", e);
+		}
 		return symptoms.toString();
 	}
 
