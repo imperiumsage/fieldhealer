@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
@@ -48,19 +49,21 @@ public class DiagnoseServlet extends HttpServlet {
 		} catch (DiagnoseServiceException e) {
 			log.log(Level.SEVERE, "Failed to get diseases", e);
 		}
-		resp.getWriter().write(diseases.toString());
-		try {
-		    URL url = new URL("http://fh-smsgateway.herokuapp.com/send?location=" + location + "&message=" +
-		   	    			  getMessageForEpidemics(epidemics));
-		    BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-		    String line;
-		    while ((line = reader.readLine()) != null) {}
-		    reader.close();
-		} catch (MalformedURLException e) {
-		    log.log(Level.SEVERE, "Failed to report epidemics", e);
-		} catch (IOException e) {
-		    log.log(Level.SEVERE, "Failed to report epidemics", e);
+		if (epidemics.size() > 0) {
+			try {
+			    URL url = new URL("http://fh-smsgateway.herokuapp.com/send?location=" + URLEncoder.encode(location, "UTF-8") + "&message=" +
+			   	    			  URLEncoder.encode(getMessageForEpidemics(epidemics), "UTF-8"));
+			    BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+			    String line;
+			    while ((line = reader.readLine()) != null) {}
+			    reader.close();
+			} catch (MalformedURLException e) {
+			    log.log(Level.SEVERE, "Failed to report epidemics", e);
+			} catch (IOException e) {
+			    log.log(Level.SEVERE, "Failed to report epidemics", e);
+			}
 		}
+		resp.getWriter().write(jsonify(diseases).toJSONString());
 	}
 	
 	@Override
@@ -70,8 +73,7 @@ public class DiagnoseServlet extends HttpServlet {
 	}
 	
 	private String getMessageForEpidemics(List<String> epidemics) {
-		String message = Joiner.on(",").join(epidemics.toArray()) + " headed your way.";
-		return message;
+		return Joiner.on(", ").join(epidemics.toArray()) + " epdemic(s) headed your way.";
 	}
 
 	private JSONArray jsonify(List<String> values) {
@@ -115,4 +117,5 @@ public class DiagnoseServlet extends HttpServlet {
 		}
 		return location;
 	}
+	
 }

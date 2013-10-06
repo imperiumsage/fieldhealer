@@ -19,7 +19,7 @@ public class DiagnoseServiceImpl implements DiagnoseService {
 
 	private static final String ADD_DISEASE_NOTIFICATION = "INSERT INTO diseases (location, disease) VALUES (?, ?)";
 	private static final String FIND_EPIDEMICS =
-			"SELECT disease, count(disease) as instances FROM diseases GROUP BY disease, location HAVING location == ? and instances >= 3";
+			"SELECT disease, count(disease) as instances FROM diseases WHERE location = ? GROUP BY disease HAVING instances >= 3";
 	private static final String SELECT_DISEASES_START = "SELECT DISTINCT disease FROM diseases_with_symptoms WHERE symptom in (";
 	private static final String SELECT_DISEASES_END = ")";
 	
