@@ -6,5 +6,5 @@ public interface DiagnoseService {
 	List<String> findPotentialDiseases(String symptoms) 
 			throws DiagnoseServiceException;
 
-	List<String> isAnEpidemic(String diseases, String location);
+	List<String> isAnEpidemic(List<String> diseases, String location);
 }

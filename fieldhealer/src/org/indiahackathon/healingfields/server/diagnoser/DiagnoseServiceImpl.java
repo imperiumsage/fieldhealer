@@ -3,6 +3,7 @@ package org.indiahackathon.healingfields.server.diagnoser;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 import java.util.logging.Level;
@@ -16,15 +17,12 @@ public class DiagnoseServiceImpl implements DiagnoseService {
 	
 	private static final Logger log = Logger.getLogger(DiagnoseServiceImpl.class.getName());
 
-<<<<<<< HEAD
-	private static final String SELECT_DISEASES = "SELECT DISTINCT disease FROM diseases_with_symptoms WHERE symptom in (?)";
 	private static final String ADD_DISEASE_NOTIFICATION = "INSERT INTO diseases (location, disease) VALUES (?, ?)";
 	private static final String FIND_EPIDEMICS =
-			"SELECT disease, count(disease) as instances FROM diseases GROUP BY disease, location HAVING location == (?) and instances >= 3";
-=======
+			"SELECT disease, count(disease) as instances FROM diseases GROUP BY disease, location HAVING location == ? and instances >= 3";
 	private static final String SELECT_DISEASES_START = "SELECT DISTINCT disease FROM diseases_with_symptoms WHERE symptom in (";
 	private static final String SELECT_DISEASES_END = ")";
->>>>>>> 4a0889c420c3ab1bec29750285d5cdaa1efe9ffe
+	
 	@Override
 	public List<String> findPotentialDiseases(String symptoms)
 			throws DiagnoseServiceException {
@@ -53,22 +51,22 @@ public class DiagnoseServiceImpl implements DiagnoseService {
 	}
 
 	@Override
-	public List<String> isAnEpidemic(String diseases, String location) {
+	public List<String> isAnEpidemic(List<String> diseases, String location) {
 		List<String> epidemics = Lists.newArrayList();
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
 			conn = Database.getConnection();
-			for (disease : diseases) {
+			for (String disease : diseases) {
 				stmt = conn.prepareStatement(ADD_DISEASE_NOTIFICATION);
-				stmt.setString(0, location);
-				stmt.setString(1, disease);
+				stmt.setString(1, location);
+				stmt.setString(2, disease);
 				stmt.execute();
 				Database.close(stmt);
 			}
 			stmt = conn.prepareStatement(FIND_EPIDEMICS);
-			stmt.setString(0, location);
+			stmt.setString(1, location);
 			rs = stmt.executeQuery();
 			while (rs.next()) {
 				String epidemic = rs.getString("disease");
