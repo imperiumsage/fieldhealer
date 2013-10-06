@@ -73,6 +73,14 @@ public class DiagnoseServlet extends HttpServlet {
 		String message = Joiner.on(",").join(epidemics.toArray()) + " headed your way.";
 		return message;
 	}
+
+	private JSONArray jsonify(List<String> values) {
+		JSONArray array = new JSONArray();
+		for (String value : values) {
+			array.add(value);
+		}
+		return array;
+	}
 	
 	private String parseDataForSymptoms(String data) {
 		StringBuffer symptoms = new StringBuffer();
