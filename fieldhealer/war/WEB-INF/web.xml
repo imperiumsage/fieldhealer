@@ -12,9 +12,19 @@
     <servlet-class>org.indiahackathon.healingfields.server.servlets.DiagnoseServlet</servlet-class>
   </servlet>
   
+  <servlet>
+    <servlet-name>aggregator</servlet-name>
+    <servlet-class>org.indiahackathon.healingfields.server.servlets.AggregatorServlet</servlet-class>
+  </servlet>
+  
   <servlet-mapping>
     <servlet-name>diagnose</servlet-name>
     <url-pattern>/diagnose</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>aggregator</servlet-name>
+    <url-pattern>/aggregator</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->

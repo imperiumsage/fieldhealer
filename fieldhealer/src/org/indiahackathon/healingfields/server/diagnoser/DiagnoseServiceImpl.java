@@ -29,7 +29,7 @@ public class DiagnoseServiceImpl implements DiagnoseService {
 		log.info("SQL: " + sql);
 		try {
 			conn = Database.getConnection();
-			stmt = conn.createStatement();
+			stmt = conn.prepareStatement(sql);
 			rs = stmt.executeQuery(sql);
 			while(rs.next()) {
 				String disease = rs.getString("disease");

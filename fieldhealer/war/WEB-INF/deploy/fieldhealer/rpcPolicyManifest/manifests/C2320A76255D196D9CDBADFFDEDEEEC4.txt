@@ -1,2 +1,0 @@
-serviceClass: org.indiahackathon.healingfields.client.GreetingService
-path: 4407B0B43C48AE41875061AB6A1EC9A2.gwt.rpc

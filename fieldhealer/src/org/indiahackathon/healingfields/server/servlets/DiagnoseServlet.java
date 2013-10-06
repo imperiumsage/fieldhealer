@@ -39,13 +39,21 @@ public class DiagnoseServlet extends HttpServlet {
 		} catch (DiagnoseServiceException e) {
 			log.log(Level.SEVERE, "Failed to get diseases", e);
 		}
-		resp.getWriter().write(diseases.toString());
+		resp.getWriter().write(jsonify(diseases).toJSONString());
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		doGet(req, resp);
+	}
+	
+	private JSONArray jsonify(List<String> values) {
+		JSONArray array = new JSONArray();
+		for (String value : values) {
+			array.add(value);
+		}
+		return array;
 	}
 	
 	private String parseDataForSymptoms(String data) {
