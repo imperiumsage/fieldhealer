@@ -11,9 +11,14 @@
     <servlet-class>org.indiahackathon.healingfields.server.GreetingServiceImpl</servlet-class>
   </servlet>
   
+  <servlet>
+    <servlet-name>diagnose</servlet-name>
+    <servlet-class>org.indiahackathon.healingfields.server.servlets.DiagnoseServlet</servlet-class>
+  </servlet>
+  
   <servlet-mapping>
-    <servlet-name>greetServlet</servlet-name>
-    <url-pattern>/fieldhealer/greet</url-pattern>
+    <servlet-name>diagnose</servlet-name>
+    <url-pattern>/diagnose</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->
