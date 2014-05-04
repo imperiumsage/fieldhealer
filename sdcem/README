@@ -1,0 +1,9 @@
+1) Download go appengine sdk from https://developers.google.com/appengine/downloads
+Follow instructions on setting PATH.
+
+2) Checkout git code.
+
+3) Run goapp serve
+
+4) http://localhost:8080/sdcem/ui for basic UI.
+http://localhost:8080/sdcem/get_all for handler for getting data.
