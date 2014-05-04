@@ -4,5 +4,11 @@ runtime: go
 api_version: go1
 
 handlers:
+- url: /sdcem/js
+  static_dir: js
+
+- url: /sdcem/css
+  static_dir: css
+
 - url: /sdcem/.*
   script: _go_app
