@@ -9,10 +9,29 @@ var globalState = {
 };
 
 function addDragHandler(element) {
-    function generateStartFunction(oldFunction, prefix) {
+    function generateElementMouseEventHandler(element) {
+        oldMouseDown = element.onmousedown;
+        element.onmousedown = generateStartFunction(oldMouseDown, "state", element);
+        oldTouchStart = element.ontouchstart;
+        element.ontouchstart = generateStartFunction(oldTouchStart, "condition", element);
+
+        oldMouseUp = element.onmouseup;
+        element.onmouseup = generateEndFunction(oldMouseUp, element);
+        oldTouchEnd = element.ontouchend;
+        element.ontouchend = generateEndFunction(oldTouchEnd, element);
+    }
+
+    function resurrectElementMouseEventHandler(element) {
+        element.onmousedown = null;
+        element.ontouchstart = null;
+        element.onmouseup = null;
+        element.ontouchend = null;
+    }
+
+    function generateStartFunction(oldFunction, prefix, element) {
 	return function() {
 	    new_element = element.cloneNode(true);
-	    element.parentNode.appendNode(new_element);
+	    element.parentNode.appendChild(new_element);
 	    if (prefix == "state") {
 		element.id = prefix + globalState.stateId;
 		globalState.stateId++;
@@ -20,24 +39,21 @@ function addDragHandler(element) {
 		element.id = prefix + globalState.conditionId;
 		globalState.conditionId++;
 	    }
+            jsPlumb.draggable(new_element);
+            generateElementMouseEventHandler(new_element);
+            resurrectElementMouseEventHandler(element);
 	    oldFunction();
 	}
     }
-    oldMouseDown = element.onmousedown;
-    element.onmousedown = generateStartFunction(oldMouseDown, "state");
-    oldTouchStart = element.ontouchstart;
-    element.ontouchstart = generateStartFunction(oldTouchStart, "condition");
-
-    function generateEndFunction(oldFunction) {
+    function generateEndFunction(oldFunction, element) {
 	return function() {
-	    element.parentNode.removeChild(element);
+            if (element.getBoundingClientRect().left() < document.getElementById("lhs").getBoundingClientRect().right()) { 
+	      element.parentNode.removeChild(element);
+            }
 	    oldFunction();
 	}
     }
-    oldMouseUp = element.onmouseup;
-    element.onmouseup = generateEndFunction(oldMouseUp);
-    oldTouchEnd = element.ontouchend;
-    element.ontouchend = generateEndFunction(oldTouchEnd);
+    generateElementMouseEventHandler(element);
 }
 
 function init() {
