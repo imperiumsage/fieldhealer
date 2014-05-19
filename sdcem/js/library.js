@@ -11,9 +11,9 @@ var globalState = {
 function addDragHandler(element) {
     function generateElementMouseEventHandler(element) {
         oldMouseDown = element.onmousedown;
-        element.onmousedown = generateStartFunction(oldMouseDown, "state", element);
+        element.onmousedown = generateStartFunction(oldMouseDown, element);
         oldTouchStart = element.ontouchstart;
-        element.ontouchstart = generateStartFunction(oldTouchStart, "condition", element);
+        element.ontouchstart = generateStartFunction(oldTouchStart, element);
 
         oldMouseUp = element.onmouseup;
         element.onmouseup = generateEndFunction(oldMouseUp, element);
@@ -21,36 +21,40 @@ function addDragHandler(element) {
         element.ontouchend = generateEndFunction(oldTouchEnd, element);
     }
 
-    function resurrectElementMouseEventHandler(element) {
-        element.onmousedown = null;
-        element.ontouchstart = null;
-        element.onmouseup = null;
-        element.ontouchend = null;
-    }
-
-    function generateStartFunction(oldFunction, prefix, element) {
+    function generateStartFunction(oldFunction, element) {
 	return function() {
-	    new_element = element.cloneNode(true);
-	    element.parentNode.appendChild(new_element);
-	    if (prefix == "state") {
-		element.id = prefix + globalState.stateId;
-		globalState.stateId++;
-	    } else {
-		element.id = prefix + globalState.conditionId;
-		globalState.conditionId++;
+	    if (element.id.indexOf('primal') == 0) {
+		new_element = element.cloneNode(true);
+		element.parentNode.appendChild(new_element);
+		element.parentNode.removeChild(element);
+		document.getElementById('canvas').appendChild(element);
+		jsPlumb.draggable(element.id, {containment: true});
+		if (element.id.indexOf('state') != -1) {
+		    element.id = 'state-' + globalState.stateId;
+		    globalState.stateId++;
+		} else {
+		    element.id = 'condition-' + globalState.conditionId;
+		    globalState.conditionId++;
+		}
+		jsPlumb.draggable(new_element);
+		generateElementMouseEventHandler(new_element);
 	    }
-            jsPlumb.draggable(new_element);
-            generateElementMouseEventHandler(new_element);
-            resurrectElementMouseEventHandler(element);
-	    oldFunction();
+	    if (oldFunction != null) {
+		oldFunction();
+	    }
 	}
     }
     function generateEndFunction(oldFunction, element) {
 	return function() {
-            if (element.getBoundingClientRect().left() < document.getElementById("lhs").getBoundingClientRect().right()) { 
+            if (element.getBoundingClientRect().left < document.getElementById("lhs").getBoundingClientRect().right) { 
 	      element.parentNode.removeChild(element);
-            }
-	    oldFunction();
+            } else {
+		element.onmouseup = null;
+		element.ontouchend = null;
+	    }
+	    if (oldFunction != null) {
+		oldFunction();
+	    }
 	}
     }
     generateElementMouseEventHandler(element);

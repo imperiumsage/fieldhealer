@@ -37,7 +37,7 @@ const templateHTML = `
 <link rel="stylesheet" type="text/css" href="/sdcem/css/library.css">
 </head>
 <body>
-<div class="lhs">
+<div class="lhs" id="lhs">
 <div class="state" id="primal-state">
 </div>
 <div class="condition" id="primal-condition">
@@ -46,6 +46,8 @@ const templateHTML = `
 <div class="top">
 <div class="searchbox">
 </div>
+</div>
+<div class="canvas" id="canvas">
 </div>
 <script>
 init();
